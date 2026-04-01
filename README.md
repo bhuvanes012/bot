@@ -1,44 +1,36 @@
 String script =
 "function getXPath(el, text) {\n" +
 "  function hasText(t){ return t && t.trim() !== ''; }\n" +
-"  function buildRelativePath(from, to) {\n" +
-"    var path = '';\n" +
-"    var current = to;\n" +
-"    while (current && current !== from) {\n" +
-"      var tag = current.tagName.toLowerCase();\n" +
-"      var index = 1;\n" +
-"      var sibling = current.previousElementSibling;\n" +
-"      while (sibling) {\n" +
-"        if (sibling.tagName === current.tagName) index++;\n" +
-"        sibling = sibling.previousElementSibling;\n" +
-"      }\n" +
-"      path = '/' + tag + '[' + index + ']' + path;\n" +
-"      current = current.parentElement;\n" +
+"  function getIndex(node) {\n" +
+"    var i = 1;\n" +
+"    var sib = node.previousElementSibling;\n" +
+"    while (sib) {\n" +
+"      if (sib.tagName === node.tagName) i++;\n" +
+"      sib = sib.previousElementSibling;\n" +
 "    }\n" +
-"    return path;\n" +
+"    return i;\n" +
 "  }\n" +
+"  var tag = el.tagName.toLowerCase();\n" +
 "  if (el.id) {\n" +
 "    if (hasText(text)) {\n" +
-"      return '//*[@id=\"' + el.id + '\" and contains(., \"' + text + '\")]';\n" +
+"      return '//' + tag + '[@id=\"' + el.id + '\" and contains(., \"' + text + '\")]';\n" +
 "    }\n" +
-"    return '//*[@id=\"' + el.id + '\"]';\n" +
+"    return '//' + tag + '[@id=\"' + el.id + '\"]';\n" +
 "  }\n" +
 "  var parent = el.parentElement;\n" +
 "  while (parent && parent !== document) {\n" +
 "    if (parent.id) {\n" +
 "      var base = '//*[@id=\"' + parent.id + '\"]';\n" +
-"      var relative = buildRelativePath(parent, el);\n" +
 "      if (hasText(text)) {\n" +
-"        return base + relative + '[contains(., \"' + text + '\")]';\n" +
+"        return base + '//' + tag + '[contains(., \"' + text + '\")]';\n" +
 "      }\n" +
-"      return base + relative;\n" +
+"      return base + '//' + tag + '[' + getIndex(el) + ']';\n" +
 "    }\n" +
 "    parent = parent.parentElement;\n" +
 "  }\n" +
-"  var tag = el.tagName.toLowerCase();\n" +
 "  if (hasText(text)) {\n" +
 "    return '//' + tag + '[contains(., \"' + text + '\")]';\n" +
 "  }\n" +
-"  return '//' + tag;\n" +
+"  return '//' + tag + '[' + getIndex(el) + ']';\n" +
 "}\n" +
 "return getXPath(arguments[0], arguments[1]);";
