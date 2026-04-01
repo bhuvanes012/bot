@@ -10,10 +10,11 @@ String script =
 "    }\n" +
 "    return i;\n" +
 "  }\n" +
+"  function esc(t){ return t.replace(/\"/g, '\\\\\"'); }\n" +
 "  var tag = el.tagName.toLowerCase();\n" +
 "  if (el.id) {\n" +
 "    if (hasText(text)) {\n" +
-"      return '//' + tag + '[@id=\"' + el.id + '\" and contains(., \"' + text + '\")]';\n" +
+"      return '//' + tag + '[@id=\"' + el.id + '\" and contains(normalize-space(.), \"' + esc(text) + '\")]';\n" +
 "    }\n" +
 "    return '//' + tag + '[@id=\"' + el.id + '\"]';\n" +
 "  }\n" +
@@ -22,14 +23,14 @@ String script =
 "    if (parent.id) {\n" +
 "      var base = '//*[@id=\"' + parent.id + '\"]';\n" +
 "      if (hasText(text)) {\n" +
-"        return base + '//' + tag + '[contains(., \"' + text + '\")]';\n" +
+"        return base + '//' + tag + '[contains(normalize-space(.), \"' + esc(text) + '\")]';\n" +
 "      }\n" +
 "      return base + '//' + tag + '[' + getIndex(el) + ']';\n" +
 "    }\n" +
 "    parent = parent.parentElement;\n" +
 "  }\n" +
 "  if (hasText(text)) {\n" +
-"    return '//' + tag + '[contains(., \"' + text + '\")]';\n" +
+"    return '//' + tag + '[contains(normalize-space(.), \"' + esc(text) + '\")]';\n" +
 "  }\n" +
 "  return '//' + tag + '[' + getIndex(el) + ']';\n" +
 "}\n" +
