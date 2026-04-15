@@ -1,3 +1,17 @@
+
+context.addInitScript(
+    "document.addEventListener('click', function(e) {" +
+    "  const el = e.target;" +
+    "  console.log('PW_EVENT::' + JSON.stringify({" +
+    "    action: 'click'," +
+    "    tag: el.tagName," +
+    "    id: el.id," +
+    "    text: el.innerText" +
+    "  }));" +
+    "}, true);"   // 👈 capture phase = more reliable
+);
+
+
 context.addInitScript(
     "document.addEventListener('click', function(e) {" +
     "  const el = e.target;" +
