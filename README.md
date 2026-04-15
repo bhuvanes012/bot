@@ -1,3 +1,29 @@
+
+page.addInitScript(
+"document.addEventListener('click', function(e) {" +
+"  const el = e.target;" +
+"  console.log('PW_EVENT::' + JSON.stringify({" +
+"    action: 'click'," +
+"    tag: el.tagName," +
+"    id: el.id," +
+"    text: el.innerText" +
+"  }));" +
+"});" +
+
+"document.addEventListener('input', function(e) {" +
+"  const el = e.target;" +
+"  console.log('PW_EVENT::' + JSON.stringify({" +
+"    action: 'type'," +
+"    tag: el.tagName," +
+"    id: el.id," +
+"    value: el.value" +
+"  }));" +
+"});"
+);
+
+
+
+
 page.addInitScript(
     "document.addEventListener('click', function(e) {" +
     "  const el = e.target;" +
