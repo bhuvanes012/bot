@@ -1,4 +1,8 @@
+const select = document.querySelector("select");
 
+select.addEventListener("change", (e) => {
+  console.log("Selected value:", e.target.value);
+});
 context.addInitScript(
     "document.addEventListener('click', function(e) {" +
     "  const el = e.target;" +
