@@ -1,4 +1,35 @@
-const select = document.querySelector("select");
+public static String buildXpath(WebDriver driver, WebElement element, String text) {
+
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+
+    return (String) js.executeScript(
+
+        "var el = arguments[0];" +
+        "var txt = arguments[1];" +
+
+        // parent
+        "var parent = el.parentElement;" +
+
+        // if parent has id
+        "if(parent && parent.id) {" +
+        "   return '//*[@id=\"' + parent.id + '\"]//*[contains(text(),\"' + txt + '\")]';" +
+        "}" +
+
+        // parent of parent
+        "var grandParent = parent ? parent.parentElement : null;" +
+
+        // if grand parent has id
+        "if(grandParent && grandParent.id) {" +
+        "   return '//*[@id=\"' + grandParent.id + '\"]//*[contains(text(),\"' + txt + '\")]';" +
+        "}" +
+
+        // fallback
+        "return '//*[contains(text(),\"' + txt + '\")]';",
+
+        element,
+        text
+    );
+}const select = document.querySelector("select");
 
 select.addEventListener("change", (e) => {
   console.log("Selected value:", e.target.value);
