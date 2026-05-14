@@ -1,3 +1,47 @@
+
+
+public static String buildXpath(WebDriver driver, WebElement element, String text) {
+
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+
+    return (String) js.executeScript(
+
+        "var el = arguments[0];" +
+        "var txt = arguments[1];" +
+
+        // find nearest parent with id
+        "var current = el.parentElement;" +
+        "var parentXpath = '';" +
+
+        "while(current) {" +
+        "   if(current.id && current.id.trim() !== '') {" +
+        "       parentXpath = '//*[@id=\"' + current.id + '\"]';" +
+        "       break;" +
+        "   }" +
+        "   current = current.parentElement;" +
+        "}" +
+
+        // fallback if no parent id found
+        "if(parentXpath === '') {" +
+        "   parentXpath = '//body';" +
+        "}" +
+
+        // if text available use contains(text())
+        "if(txt && txt.trim() !== '') {" +
+        "   return parentXpath + '//*[contains(text(),\"' + txt + '\")]';" +
+        "}" +
+
+        // if text empty use tag name
+        "var tag = el.tagName.toLowerCase();" +
+        "return parentXpath + '//' + tag;",
+
+        element,
+        text
+    );
+}
+
+
+
 public static String buildXpath(WebDriver driver, WebElement element, String text) {
 
     JavascriptExecutor js = (JavascriptExecutor) driver;
