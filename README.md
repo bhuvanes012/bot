@@ -1,3 +1,158 @@
+public static List<String> buildXpaths(WebDriver driver,
+                                       WebElement element,
+                                       String text) {
+
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+
+    return (List<String>) js.executeScript(
+
+        "var el = arguments[0];" +
+        "var txt = arguments[1];" +
+        "var result = [];" +
+
+        // =========================================
+        // add xpath only if unique
+        // =========================================
+        "function addXpath(xp) {" +
+        "   if(!xp || xp.trim() === '') return;" +
+
+        "   try {" +
+        "       var nodes = document.evaluate(" +
+        "           xp," +
+        "           document," +
+        "           null," +
+        "           XPathResult.ORDERED_NODE_SNAPSHOT_TYPE," +
+        "           null" +
+        "       );" +
+
+        "       if(nodes.snapshotLength === 1 && result.indexOf(xp) === -1) {" +
+        "           result.push(xp);" +
+        "       }" +
+        "   } catch(e) {}" +
+        "}" +
+
+        // =========================================
+        // get index among same tag siblings
+        // =========================================
+        "function getIndex(node) {" +
+        "   var idx = 1;" +
+        "   var sib = node.previousElementSibling;" +
+
+        "   while(sib) {" +
+        "       if(sib.tagName === node.tagName) {" +
+        "           idx++;" +
+        "       }" +
+        "       sib = sib.previousElementSibling;" +
+        "   }" +
+
+        "   return idx;" +
+        "}" +
+
+        "var tag = el.tagName.toLowerCase();" +
+        "var idx = getIndex(el);" +
+
+        // =========================================
+        // 1. ELEMENT ID
+        // =========================================
+        "if(el.id && el.id.trim() !== '') {" +
+        "   addXpath('//*[@id=\"' + el.id + '\"]');" +
+
+        "   if(txt && txt.trim() !== '') {" +
+        "       addXpath('//*[@id=\"' + el.id + '\"][contains(text(),\"' + txt + '\")]');" +
+        "   }" +
+        "}" +
+
+        // =========================================
+        // 2. PARENT IDS
+        // =========================================
+        "var current = el.parentElement;" +
+
+        "while(current) {" +
+
+        "   if(current.id && current.id.trim() !== '') {" +
+
+        "       var base = '//*[@id=\"' + current.id + '\"]';" +
+
+        // if text available
+        "       if(txt && txt.trim() !== '') {" +
+
+        "           addXpath(base + '//' + tag + '[contains(text(),\"' + txt + '\")]');" +
+        "           addXpath(base + '//*[contains(text(),\"' + txt + '\")]');" +
+
+        "       } else {" +
+
+        // no text -> use index
+        "           addXpath(base + '//' + tag + '[' + idx + ']');" +
+        "           addXpath('(' + base + '//' + tag + ')[' + idx + ']');" +
+        "       }" +
+        "   }" +
+
+        "   current = current.parentElement;" +
+        "}" +
+
+        // =========================================
+        // 3. UNIQUE ATTRIBUTES
+        // =========================================
+        "if(result.length === 0) {" +
+
+        "   var attrs = [" +
+        "       'name'," +
+        "       'type'," +
+        "       'placeholder'," +
+        "       'value'," +
+        "       'title'," +
+        "       'aria-label'," +
+        "       'data-testid'," +
+        "       'class'" +
+        "   ];" +
+
+        "   for(var i=0; i<attrs.length; i++) {" +
+
+        "       var attr = attrs[i];" +
+        "       var val = el.getAttribute(attr);" +
+
+        "       if(val && val.trim() !== '') {" +
+
+        "           addXpath('//' + tag + '[@' + attr + '=\"' + val + '\"]');" +
+
+        "           if(val.indexOf(' ') > -1) {" +
+        "               var first = val.split(' ')[0];" +
+        "               addXpath('//' + tag + '[contains(@' + attr + ',\"' + first + '\")]');" +
+        "           }" +
+        "       }" +
+        "   }" +
+        "}" +
+
+        // =========================================
+        // 4. TEXT FALLBACK
+        // =========================================
+        "if(txt && txt.trim() !== '') {" +
+        "   addXpath('//' + tag + '[contains(text(),\"' + txt + '\")]');" +
+        "}" +
+
+        // =========================================
+        // 5. FINAL INDEX FALLBACK
+        // =========================================
+        "var all = document.getElementsByTagName(tag);" +
+
+        "for(var j=0; j<all.length; j++) {" +
+        "   if(all[j] === el) {" +
+        "       addXpath('(//' + tag + ')[' + (j + 1) + ']');" +
+        "       break;" +
+        "   }" +
+        "}" +
+
+        "return result;",
+
+        element,
+        text
+    );
+}
+
+
+
+
+
 
 
 public static List<String> buildUniqueXpaths(WebDriver driver,
