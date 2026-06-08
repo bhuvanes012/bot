@@ -1,3 +1,37 @@
+
+
+let highlightedElement = null;
+
+document.addEventListener("mouseover", (event) => {
+
+    if (highlightedElement !== event.target) {
+
+        if (highlightedElement) {
+            highlightedElement.style.outline = "";
+        }
+
+        highlightedElement = event.target;
+        highlightedElement.style.outline = "3px solid red";
+    }
+});
+
+document.addEventListener("mouseout", (event) => {
+
+    if (event.target === highlightedElement) {
+        highlightedElement.style.outline = "";
+        highlightedElement = null;
+    }
+});
+
+
+
+
+
+
+
+
+
+
 https://docs.google.com/spreadsheets/d/14MMbM-Q8CZIVnRGBBhv_5dwWnR8ZD3DMXhc_dHBoMOk/edit?usp=sharing
 
 public static List<String> buildXpaths(WebDriver driver,
